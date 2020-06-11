@@ -1,0 +1,10 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "/vercel.json"
+      ],
+      "url": "https://vercel-config-schema.now.sh/"
+    }
+  ]
+}
