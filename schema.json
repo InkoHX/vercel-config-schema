@@ -1,0 +1,309 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Vercel Configuration",
+  "description": "JSON Schema for vercel.json.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "string name for the deployment.",
+      "maxLength": 52
+    },
+    "version": {
+      "type": "integer",
+      "enum": [
+        1,
+        2
+      ],
+      "description": "Specifies the Vercel Platform version the deployment should use and is known to work with. We strongly recommend setting a version when working on production systems or using source control (e.g. Git)."
+    },
+    "alias": {
+      "type": "array",
+      "maxItems": 64,
+      "description": "domain names (optionally including subdomains) added to the account, or a string for a suffixed URL using .now.sh or a Custom Deployment Suffix (available on the Enterprise plan)."
+    },
+    "scope": {
+      "type": "string",
+      "description": "For teams, either an ID or slug. For users, either a email address, username, or ID."
+    },
+    "env": {
+      "type": "object",
+      "description": "environment keys and values.",
+      "patternProperties": {
+        "^(.*)$": {
+          "type": "string"
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "description": "environment keys and values.",
+      "properties": {
+        "env": {
+          "type": "object",
+          "patternProperties": {
+            "^(.*)$": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "builds": {
+      "type": "array",
+      "description": "a list of build descriptions whose src references valid source files.",
+      "items": {
+        "type": "object",
+        "required": [
+          "src",
+          "use"
+        ],
+        "properties": {
+          "src": {
+            "type": "string",
+            "description": "A glob expression or pathname. If more than one file is resolved, one build will be created per matched file. It can include * and **."
+          },
+          "use": {
+            "type": "string",
+            "description": "An npm module to be installed by the build process. It can include a semver compatible version (e.g.: @org/proj@1)."
+          },
+          "config": {
+            "type": "object",
+            "description": "Optionally, an object including arbitrary metadata to be passed to the Builder."
+          }
+        }
+      }
+    },
+    "functions": {
+      "type": "object",
+      "description": "https://vercel.com/docs/configuration#project/functions",
+      "patternProperties": {
+        "^(.*)$": {
+          "type": "object",
+          "description": "The npm package name of a Runtime, including its version.",
+          "properties": {
+            "runtime": {
+              "type": "string"
+            },
+            "memory": {
+              "type": "integer",
+              "description": "An integer defining the memory your Serverless Function should be provided with (between 128 and 3008, in intervals of 64)."
+            },
+            "maxDuration": {
+              "type": "integer",
+              "description": "An integer defining how long your Serverless Function should be allowed to run on every request in seconds (between 1 and the maximum limit of your plan, as mentioned below)."
+            },
+            "includeFiles": {
+              "type": "string",
+              "description": "A glob pattern to match files that should be included in your Serverless Function. If you’re using a Community Runtime, the behavior might vary. Please consult its documentation for more details."
+            },
+            "excludeFiles": {
+              "type": "string",
+              "description": "A glob pattern to match files that should be included in your Serverless Function. If you’re using a Community Runtime, the behavior might vary. Please consult its documentation for more details."
+            }
+          }
+        }
+      }
+    },
+    "routes": {
+      "type": "array",
+      "description": "a list of route definitions.",
+      "items": {
+        "type": "object",
+        "dependencies": {
+          "src": [
+            "dest"
+          ],
+          "dest": [
+            "src"
+          ]
+        },
+        "properties": {
+          "src": {
+            "type": "string",
+            "description": "A PCRE-compatible regular expression that matches each incoming pathname (excluding querystring)."
+          },
+          "methods": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "A set of HTTP method types. If no method is provided, requests with any HTTP method will be a candidate for the route."
+          },
+          "dest": {
+            "type": "string",
+            "required": [
+              "src"
+            ],
+            "description": "A destination pathname or full URL, including querystring, with the ability to embed capture groups as $1, $2…"
+          },
+          "headers": {
+            "type": "object",
+            "description": "A set of headers to apply for responses."
+          },
+          "status": {
+            "type": "integer",
+            "description": "A status code to respond with. Can be used in tandem with Location: header to implement redirects."
+          },
+          "continue": {
+            "type": "boolean",
+            "description": "A boolean to change matching behavior. If true, routing will continue even when the src is matched."
+          }
+        }
+      }
+    },
+    "regions": {
+      "type": "array",
+      "description": "a list of valid region identifiers.",
+      "items": {
+        "type": "string",
+        "description": "a list of valid region identifiers.",
+        "enum": [
+          "all",
+          "arn1",
+          "bom1",
+          "bru1",
+          "cdg1",
+          "cle1",
+          "dub1",
+          "gru1",
+          "hkg1",
+          "hnd1",
+          "iad1",
+          "icn1",
+          "lhr1",
+          "pdx1",
+          "sfo1",
+          "sin1",
+          "syd1"
+        ]
+      }
+    },
+    "public": {
+      "type": "boolean",
+      "description": "When set to true, both the source view and logs view will be publicly accessible."
+    },
+    "cleanUrls": {
+      "type": "boolean",
+      "description": "When set to true, all HTML files and Serverless Functions will have their extension removed. When visiting a path that ends with the extension, a 308 response will redirect the client to the extensionless path."
+    },
+    "trailingSlash": {
+      "type": "boolean",
+      "description": "When trailingSlash: false, visiting a path that ends with a forward slash will respond with a 308 status code and redirect to the path without the trailing slash."
+    },
+    "redirects": {
+      "type": "array",
+      "maxItems": 1024,
+      "description": "a list of redirect definitions.",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "destination"
+        ],
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 4096,
+            "description": "A pattern that matches each incoming pathname (excluding querystring)."
+          },
+          "destination": {
+            "type": "string",
+            "maxLength": 4096,
+            "description": "A location destination defined as an absolute pathname or external URL."
+          },
+          "permanent": {
+            "type": "boolean",
+            "description": "A boolean to toggle between permanent and temporary redirect (default true). When true, the status code is 308. When false the status code is 307."
+          }
+        }
+      }
+    },
+    "rewrites": {
+      "type": "array",
+      "maxItems": 1024,
+      "description": "a list of rewrite definitions.",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "destination"
+        ],
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 4096,
+            "description": "A pattern that matches each incoming pathname (excluding querystring)."
+          },
+          "destination": {
+            "type": "string",
+            "maxLength": 4096,
+            "description": "An absolute pathname to an existing resource or an external URL."
+          }
+        }
+      }
+    },
+    "headers": {
+      "type": "array",
+      "maxItems": 1024,
+      "description": "a list of header definitions.",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "headers"
+        ],
+        "properties": {
+          "source": {
+            "type": "string",
+            "maxLength": 4096,
+            "description": "A pattern that matches each incoming pathname (excluding querystring)."
+          },
+          "headers": {
+            "type": "array",
+            "description": "An array of key/value pairs representing each response header.",
+            "items": {
+              "type": "object",
+              "required": [
+                "key",
+                "value"
+              ],
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "maxLength": 4096
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 4096
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "github": {
+      "type": "object",
+      "description": "Git Integrations",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "When set to false, Vercel for GitHub will not deploy the given project regardless of the GitHub app being installed."
+        },
+        "autoAlias": {
+          "type": "boolean",
+          "description": "When set to false, Vercel for GitHub will not apply the alias upon merge."
+        },
+        "silent": {
+          "type": "boolean",
+          "description": "When set to true, Vercel for GitHub will stop commenting on pull requests and commits."
+        },
+        "autoJobCancelation": {
+          "type": "boolean",
+          "description": "When set to false, Vercel for GitHub will always build pushes in sequence without cancelling a build for the most recent commit."
+        }
+      }
+    }
+  }
+}
